@@ -7,10 +7,12 @@ cmd = "go build -o {{.Output}} {{.Input}}" # The command to build the project
 exclude = [
     "tmp/*",
     "client/*",
+    ".git/*",
 ] # Specifies the directories to be excluded from monitoring for changes
 include = [
     "**/*.go",
 ] # Specifies the file patterns to be included for monitoring.
 ignore = [
     "tmp/*",
+    ".gitignore",
 ] # Specifies the files or directories to be ignored when triggering a build.
