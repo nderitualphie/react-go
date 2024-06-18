@@ -4,10 +4,12 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"net/http"
 	"os"
 
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -15,7 +17,7 @@ import (
 )
 
 type TODO struct {
-	ID        primitive.ObjectID `json:"id,omitempty" bson:"_id,omitempty"`
+	ID        primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
 	BODY      string             `json:"body"`
 	COMPLETED bool               `json:"completed"`
 }
@@ -41,6 +43,12 @@ func main() {
 	fmt.Println("CONNECTED TO MONGODB ATLAS")
 	collection = client.Database("react_go").Collection("todos")
 	e := echo.New()
+	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowOrigins: []string{"*"}, // in production limit this to only known hosts
+		AllowHeaders: []string{"*"},
+		//AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept, echo.HeaderXForwardedFor,echo.HeaderXRealIP,echo.HeaderAuthorization},
+		AllowMethods: []string{http.MethodGet, http.MethodHead, http.MethodPut, http.MethodPatch, http.MethodPost, http.MethodDelete},
+	}))
 	e.GET("/api/todo", getTodos)
 	e.POST("/api/todo", createTodos)
 	e.PATCH("/api/todo/:id", updateTodo)
